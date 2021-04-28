@@ -8,6 +8,7 @@ from ..util.process import Process
 from ..config import Configuration
 from ..model.target import Target, WPSState
 from ..model.client import Client
+import datetime
 
 import os, time
 
@@ -68,6 +69,7 @@ class Airodump(Dependency):
         command = [
             'airodump-ng',
             self.interface,
+            '--gpsd',
             '-a', # Only show associated clients
             '-w', self.csv_file_prefix, # Output file prefix
             '--write-interval', '1' # Write every second
@@ -79,8 +81,8 @@ class Airodump(Dependency):
         if self.wps:          command.extend(['--wps'])
         if self.target_bssid: command.extend(['--bssid', self.target_bssid])
 
-        if self.ivs_only: command.extend(['--output-format', 'ivs,csv'])
-        else:             command.extend(['--output-format', 'pcap,csv'])
+        if self.ivs_only: command.extend(['--output-format', 'kismet,ivs,csv'])
+        else:             command.extend(['--output-format', 'kismet,pcap,csv'])
 
         # Store value for debugging
         self.command = command
@@ -127,7 +129,12 @@ class Airodump(Dependency):
         '''
         # Remove all temp files
         for fil in cls.find_files_by_output_prefix(output_file_prefix):
-            os.remove(fil)
+            if 'kismet' in fil:
+                ts = datetime.datetime.now()
+                name = '/home/pi/kismet/'+str(ts)+'.kismet.csv'
+                os.rename(fil,name)
+            else:
+                os.remove(fil)
 
         # Remove .cap and .xor files from pwd
         for fil in os.listdir('.'):
@@ -146,8 +153,9 @@ class Airodump(Dependency):
         # Find the .CSV file
         csv_filename = None
         for fil in self.find_files(endswith='.csv'):
-            csv_filename = fil  # Found the file
-            break
+            if 'kismet' not in fil:
+                csv_filename = fil  # Found the file
+                break
 
         if csv_filename is None or not os.path.exists(csv_filename):
             return self.targets  # No file found

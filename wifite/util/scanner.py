@@ -1,14 +1,30 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+#####################################################
+#from luma.core.interface.serial import spi, noop
+#from luma.core.render import canvas
+#from luma.core.virtual import sevensegment
+#from luma.led_matrix.device import max7219
+#####################################################
+
 from ..util.color import Color
 from ..tools.airodump import Airodump
 from ..tools.airmon import Airmon
 from ..util.input import raw_input, xrange
 from ..model.target import Target, WPSState, ArchivedTarget
 from ..config import Configuration
+#from tinydb import TinyDB, Query
 
 from time import sleep, time
+
+###################################################
+#serial = spi(port=0, device=0, gpio=noop())
+#device = max7219(serial, cascaded=2)
+#seg = sevensegment(device)
+#
+#seg.text = "Hello wo12345678"
+###################################################
 
 
 class Scanner(object):
@@ -24,6 +40,7 @@ class Scanner(object):
         self.target = None  # Target specified by user (based on ESSID/BSSID)
         self.err_msg = None
         self.airodump_iface = None
+        #self.db = TinyDB('/home/pi/wifite2/positions.json')
 
     def check_running(self, airodump):
         exit_code = airodump.pid.poll()
@@ -188,7 +205,15 @@ class Scanner(object):
         if Configuration.show_bssids:
             Color.p('              BSSID')
         Color.pl('   CH  ENCR   POWER  WPS?  CLIENT')
-
+####################################################################
+        #position_file = open('/home/pi/pos','r')
+        #position = position_file.read()
+        #position_file.close()
+        #position = position.split(',')
+        #lat = position[0]
+        #lon = position[1]
+        # Color.pl("Lat: "+str(lat)+"    Lon: "+str(lon))
+####################################################################
         # Second row: separator
         Color.p('   ---')
         Color.p('  -------------------------')
@@ -196,11 +221,24 @@ class Scanner(object):
             Color.p('  -----------------')
         Color.pl('  ---  -----  -----  ----  ------{W}')
 
+#####################################################################3
+        # s = str(len(self.targets)).rjust(8)
+        # seg.text = "Hello wo"+s
+######################################################################
         # Remaining rows: targets
         for idx, target in enumerate(self.targets, start=1):
             Color.clear_entire_line()
             Color.p('   {G}%s  ' % str(idx).rjust(3))
             Color.pl(target.to_str(Configuration.show_bssids))
+           # ssid_query = Query()
+            #result = self.db.get((ssid_query.s == str(target.essid)) & (ssid_query.mac == str(target.bssid)))
+            #if result:
+             #   if result['pow'] < target.power:
+              #      self.db.upsert({'s':str(target.essid),'mac':target.bssid,'lat':lat,'lon':lon, 'pow':target.power},(ssid_query.s == str(target.essid)) & (ssid_query.mac == str(target.bssid)))
+            #else:
+             #   self.db.upsert({'s':str(target.essid),'mac':target.bssid,'lat':lat,'lon':lon, 'pow':target.power},(ssid_query.s == str(target.essid)) & (ssid_query.mac == str(target.bssid)))
+            # Color.pl(target.power)
+
 
     @staticmethod
     def get_terminal_height():

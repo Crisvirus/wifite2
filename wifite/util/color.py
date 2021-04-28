@@ -1,7 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+#####################################################
+#from luma.core.interface.serial import spi, noop
+#from luma.core.render import canvas
+#from luma.core.virtual import sevensegment
+#from luma.led_matrix.device import max7219
+#####################################################
+
 import sys
+
+###################################################
+#serial = spi(port=0, device=0, gpio=noop())
+#device = max7219(serial, cascaded=2)
+#seg = sevensegment(device)
+#seg.text = "Hello wo12345678"
+###################################################
 
 class Color(object):
     ''' Helper object for easily printing colored text to the terminal. '''
@@ -88,6 +102,12 @@ class Color(object):
         e.g.: Router2G (23db) WEP replay attack: 102 IVs
         '''
         essid = '{C}%s{W}' % target.essid if target.essid_known else '{O}unknown{W}'
+#####################################################################33
+#        if target.essid_known:
+#            seg.text = "Hello wo"+str(target.essid)[:8]
+#        else:
+#            seg.text = "Hello woUnknown"
+###############################################################3
         Color.p('\r{+} {G}%s{W} ({C}%sdb{W}) {G}%s {C}%s{W}: %s ' % (
             essid, target.power, attack_type, attack_name, progress))
 
